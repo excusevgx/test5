@@ -1,0 +1,91 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+
+int judge(char a)
+{
+	if(a=='+'||a=='-'||a=='*'||a=='/') return 1;
+	else return 0;	
+} 
+void goSign(char *p)
+{
+	while(*p!='\0')
+	{
+		*p=*(p+1);
+		 p++;
+	}
+}
+void goidSign(float *p,float *last)
+{
+	while(p!=last)
+	{
+		*p=*(p+1);
+		 p++;
+	}
+}
+int main()
+{
+	printf("请输入一个包含+ - * /的算式\n");
+	char str[100];
+	gets(str);
+	char sign[100]={'\0'};
+	float idSign[100];
+	int signStack=0;
+	for(int i=0;i<strlen(str);i++)
+	{
+		if(judge(str[i]))
+		{
+			sign[signStack]=str[i];
+			signStack++;
+		}
+	} 
+	int idSignStack=0;
+	for(int i=0;i<strlen(str);i++)
+	{
+		char test[100]={'\0'};
+		int testStack=0;
+		while(!judge(str[i]))
+		{
+			test[testStack]=str[i];
+			i++;
+			testStack++;
+		}
+		float stand=atof(test);
+		idSign[idSignStack++]=stand;
+	}
+	char *ansSign=sign;
+	float *ansidSign=idSign,res;
+	while(*ansSign!='\0')
+	{
+		switch(*ansSign)
+		{
+			case '*':res=(*ansidSign)*(*(ansidSign+1));
+               *ansidSign=res;
+               goSign(ansSign);
+               goidSign(ansidSign+1,&idSign[idSignStack--]);break;
+			case '/':res=(*ansidSign)/(*(ansidSign+1));
+               *ansidSign=res;
+               goSign(ansSign);
+               goidSign(ansidSign+1,&idSign[idSignStack--]);break;
+			default:ansSign++;ansidSign++;break;
+		}
+	} 
+	ansSign=sign;
+	ansidSign=idSign;
+	while(*ansSign!='\0')
+	{
+		switch(*ansSign)
+		{
+			case '+':res=(*ansidSign)+(*(ansidSign+1));
+               *ansidSign=res;
+               goSign(ansSign);
+               goidSign(ansidSign+1,&idSign[idSignStack--]);break;
+			case '-':res=(*ansidSign)-(*(ansidSign+1));
+               *ansidSign=res;
+               goSign(ansSign);
+               goidSign(ansidSign+1,&idSign[idSignStack--]);break;
+		}
+	}
+	printf("运算结果是%0.2f\n",idSign[0]);
+	return 0;
+}
